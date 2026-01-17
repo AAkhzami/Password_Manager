@@ -58,7 +58,7 @@ namespace Password_Manager_Business_Layer
             string title = "", accountUser = "", password = "", url = "", imagePath = "";
             if(clsPassKeysData.GetPassKeyInfo(keyID, ref userID, ref title, ref accountUser, ref password, ref url, ref imagePath))
             {
-                password = clsSecurityHelper.DecryptThePassword(password,clsUser.Find(userID).Password);
+                password = clsSecurityHelper.Decrypt(password,clsUser.Find(userID).UserName);
                 return new clsPassKeys(keyID, userID, title, accountUser, password, url, imagePath);
             }
             else
@@ -119,15 +119,11 @@ namespace Password_Manager_Business_Layer
         }
         private string EncryptThePassword(string password)
         {
-            clsUser _userInfo = clsUser.Find(this.UserID);
+            clsUser _userInfo = clsUser.Find(this.UserID); 
 
-            clsSecurityHelper sh = new clsSecurityHelper(_userInfo.Password);
+            clsSecurityHelper sh = new clsSecurityHelper(_userInfo.UserName);
             string encPass = sh.Encrypt(password);
             return encPass;
-        }
-        public static string DecryptThePassword(string password, string EnterdPass)
-        {
-            return clsSecurityHelper.DecryptThePassword(password, EnterdPass);
         }
     }
 }

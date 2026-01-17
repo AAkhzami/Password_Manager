@@ -50,7 +50,8 @@ namespace Password_Manager_Business_Layer
             DateTime createdAt = DateTime.Now;  
             if(clsUserData.GetUserInfoByID(userID, ref userName, ref password, ref createdAt, ref email))
             {
-                return new clsUser(userID, userName, password, createdAt, email);   
+                string decpassword = clsSecurityHelper.Decrypt(password, userName);
+                return new clsUser(userID, userName, decpassword, createdAt, email);   
             }
             else
                 return null;
@@ -62,7 +63,8 @@ namespace Password_Manager_Business_Layer
             DateTime createdAt = DateTime.Now;
             if (clsUserData.GetUserInfoByUserName(userName, ref userID, ref password, ref createdAt, ref email))
             {
-                return new clsUser(userID, userName, password, createdAt, email);
+                string decpassword = clsSecurityHelper.Decrypt(password, userName);
+                return new clsUser(userID, userName, decpassword, createdAt, email);
             }
             else
                 return null;
@@ -72,8 +74,7 @@ namespace Password_Manager_Business_Layer
             int userID = -1;
             string email = "";
             DateTime createdAt = DateTime.Now;
-            clsSecurityHelper sh = new clsSecurityHelper(password);
-            string encpassword = sh.Encrypt(password);
+            string encpassword = clsSecurityHelper.Encrypt(password, username);
             if (clsUserData.FindByUserNameAndPassword(username, encpassword, ref userID, ref createdAt, ref email))
             {
                 return new clsUser(userID, username, password, createdAt, email);
@@ -85,14 +86,14 @@ namespace Password_Manager_Business_Layer
         {
             if(this.UserName == "")
                 return false;
-            this._UserID = clsUserData.AddNewUser(this.UserName, EncryptThePassword(this.Password), this.CreatedAt, this.Email);
+            this._UserID = clsUserData.AddNewUser(this.UserName, clsSecurityHelper.Encrypt(this.Password,this.UserName), this.CreatedAt, this.Email);
             return this._UserID != -1;
         }
         private bool _UpdateUser()
         {
             if (this.UserName == "")
                 return false;
-            return clsUserData.UpdateUser(this._UserID,this.UserName, EncryptThePassword(this.Password), this.CreatedAt, this.Email);
+            return clsUserData.UpdateUser(this._UserID,this.UserName, clsSecurityHelper.Encrypt(this.Password, this.UserName), this.CreatedAt, this.Email);
         }
         public bool Save()
         {
@@ -119,13 +120,10 @@ namespace Password_Manager_Business_Layer
 
             return clsUserData.DeleteUser(userID);
         }
-
-
-        private string EncryptThePassword(string password)
+        public static bool IsUserExist(string UserName)
         {
-            clsSecurityHelper sh = new clsSecurityHelper(this.Password);
-            string encPass = sh.Encrypt(password);
-            return encPass;
+            return clsUserData.IsUserExist(UserName);
         }
+
     }
 }

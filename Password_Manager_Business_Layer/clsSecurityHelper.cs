@@ -11,15 +11,15 @@ namespace Password_Manager_Business_Layer
     public class clsSecurityHelper
     {
         private byte[] _PrivateKey;
-        public clsSecurityHelper(string MasterKey)
+        public clsSecurityHelper(string UserName)
         {
-            _PrivateKey = _GenerateKey(MasterKey);
+            _PrivateKey = _GenerateKey(UserName);
         }
-        private byte[] _GenerateKey(string masterPassword)
+        private byte[] _GenerateKey(string username)
         {
             byte[] salt = Encoding.UTF8.GetBytes("JustMyUniqueRandomSalt");
 
-            using (var deriveBytes = new Rfc2898DeriveBytes(masterPassword, salt, 10000))
+            using (var deriveBytes = new Rfc2898DeriveBytes(username, salt, 10000))
             {
                 return deriveBytes.GetBytes(32);
             }
@@ -44,8 +44,8 @@ namespace Password_Manager_Business_Layer
                         {
                             streamWriter.Write(plainText);
                         }
-                        array = memoryStream.ToArray();
                     }
+                    array = memoryStream.ToArray();
                 }
             }
             return Convert.ToBase64String(array);
@@ -74,11 +74,17 @@ namespace Password_Manager_Business_Layer
                 }
             }
         }
-        public static string DecryptThePassword(string password, string masterPassword)
+        public static string Decrypt(string password, string username)
         {
-            clsSecurityHelper sh = new clsSecurityHelper(masterPassword);
+            clsSecurityHelper sh = new clsSecurityHelper(username);
             string decPass = sh.Decrypt(password);
             return decPass;
+        }
+        public static string Encrypt(string password, string username)
+        {
+            clsSecurityHelper sh = new clsSecurityHelper(username);
+            string Encrypt = sh.Encrypt(password);
+            return Encrypt;
         }
     }
 }

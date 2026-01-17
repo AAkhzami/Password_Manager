@@ -226,7 +226,36 @@ namespace Password_Manager_Data_Layer
             }
             return isFound;
         }
+        public static bool IsUserExist(string username)
+        {
+            bool isFound = false;
+            SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString);
+            string query = @"select * from Users where UserName = @UserName";
 
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@UserName", username);
+
+            try
+            {
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    isFound = true;
+                }
+                else
+                    return false;
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            { isFound = false; }
+            finally
+            {
+                connection.Close();
+            }
+            return isFound;
+        }
 
     }
 }

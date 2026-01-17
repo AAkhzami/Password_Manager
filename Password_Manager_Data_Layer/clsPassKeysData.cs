@@ -106,7 +106,8 @@ namespace Password_Manager_Data_Layer
                             Title = @Title,
                             Password = @Password,
                             AccountUser = @AccountUser,
-                            URL = @URL
+                            URL = @URL,
+                            ImagePath = @ImagePath
                             WHERE KeyID = @KeyID";
 
             SqlCommand command = new SqlCommand(query, connection);
@@ -121,9 +122,9 @@ namespace Password_Manager_Data_Layer
             command.Parameters.AddWithValue("@KeyID", KeyID);
 
             if (ImagePath != "")
-                command.Parameters.AddWithValue("@ImagePath", DBNull.Value);
-            else
                 command.Parameters.AddWithValue("@ImagePath", ImagePath);
+            else
+                command.Parameters.AddWithValue("@ImagePath", DBNull.Value);
 
             try
             {
