@@ -107,28 +107,27 @@ namespace Password_Manager.Pass_Key
                 return;
 
 
-            clsPassKeys key = new clsPassKeys();
 
-            key.UserID = clsGlobal.CurrentUser.UserID;
-            key.Title = txbTitle.Text.Trim();
-            key.AccountUser = txbAccountUser.Text.Trim();
-            key.Password = txbPassword.Text.Trim();
-            key.URL = txbURL.Text.Trim();
+            _KeyInfo.UserID = clsGlobal.CurrentUser.UserID;
+            _KeyInfo.Title = txbTitle.Text.Trim();
+            _KeyInfo.AccountUser = txbAccountUser.Text.Trim();
+            _KeyInfo.Password = txbPassword.Text.Trim();
+            _KeyInfo.URL = txbURL.Text.Trim();
 
             if (pbImage.ImageLocation != null)
-                key.ImagePath = pbImage.ImageLocation;
+                _KeyInfo.ImagePath = pbImage.ImageLocation;
             else
-                key.ImagePath = "";
+                _KeyInfo.ImagePath = "";
 
 
-            if(!key.Save())
+            if(!_KeyInfo.Save())
             {
                 MessageBox.Show("Something wrong, the key was not added!", "wrong!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             else
             {
-                MessageBox.Show("New Key added successfully!", "added successfully", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Data saved successfully!", "Saved successfully", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -143,20 +142,29 @@ namespace Password_Manager.Pass_Key
         void _LoadData()
         {
             _KeyInfo = clsPassKeys.Find(_KeyID);
-            if(_KeyInfo != null)
+            if (_KeyInfo != null)
             {
 
                 txbTitle.Text = _KeyInfo.Title;
                 txbAccountUser.Text = _KeyInfo.AccountUser;
                 txbPassword.Text = _KeyInfo.Password;
                 txbURL.Text = _KeyInfo.URL;
-                pbImage.Image = Resources.web;
-                if(!string.IsNullOrWhiteSpace(_KeyInfo.ImagePath))
+   
+                if (!string.IsNullOrWhiteSpace(_KeyInfo.ImagePath))
                 {
                     pbImage.ImageLocation = _KeyInfo.ImagePath;
                 }
+                else
+                    pbImage.Image = Resources.web;
 
                 btnRemove.Visible = (_KeyInfo.ImagePath != "");
+
+            }
+            else
+            {
+                MessageBox.Show("Key Not Found!","Not Allowed",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                btnAdd.Enabled = false;
+                return;
 
             }
         }
@@ -175,6 +183,7 @@ namespace Password_Manager.Pass_Key
                 lblTitle.Text = "Add New PassKey";
                 this.Text = lblTitle.Text;
                 btnAdd.Text = "Add";
+                _KeyInfo = new clsPassKeys();
                 txbTitle.Focus();
             }
             
@@ -230,6 +239,13 @@ namespace Password_Manager.Pass_Key
             }
 
             return true;
+        }
+
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            pbImage.ImageLocation = null;
+            pbImage.Image = Resources.web;
+            btnRemove.Visible = false;
         }
     }
 }

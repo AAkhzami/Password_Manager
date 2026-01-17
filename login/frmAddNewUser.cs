@@ -18,6 +18,7 @@ namespace Password_Manager.login
         public event DataBackEventHandler DataBack;
 
         int _userID = -1;
+        clsUser user;
         public frmAddNewUser()
         {
             InitializeComponent();
@@ -56,15 +57,25 @@ namespace Password_Manager.login
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
-        {
-            if(MessageBox.Show("Are you sure that you want to create this user? You can not edit any information if you created!", "Confirm",MessageBoxButtons.YesNo,
+        {            
+            if (!this.ValidateChildren())
+                return;
+            if(clsUser.IsUserExist(txbUserName.Text.Trim()))
+            {
+                MessageBox.Show("This username exists. Choose another name!", "not allowed",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txbUserName.Focus();
+                errorProvider1.SetError(txbUserName, "This username exists. Choose another name.");
+                return;
+            }
+            else
+                errorProvider1.SetError(txbUserName, "");
+
+
+            if (MessageBox.Show("Are you sure that you want to create this user? You can not edit any information if you created!", "Confirm", MessageBoxButtons.YesNo,
                 MessageBoxIcon.Information) == DialogResult.No)
             {
                 return;
             }
-            
-            if (!this.ValidateChildren())
-                return;
 
             clsUser user = new clsUser();
             user.UserName =txbUserName.Text.Trim();
