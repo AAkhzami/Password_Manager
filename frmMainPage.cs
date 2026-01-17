@@ -27,7 +27,7 @@ namespace Password_Manager
         {
             _dtAllPassKeysByUserID = clsPassKeys.GetAllPassKeysByUserID(clsGlobal.CurrentUser.UserID);
             if (_dtAllPassKeysByUserID.Rows.Count > 0)
-                _dtPassKeys = _dtAllPassKeysByUserID.DefaultView.ToTable(true, "KeyID", "Title", "Password", "URL");
+                _dtPassKeys = _dtAllPassKeysByUserID.DefaultView.ToTable(true, "KeyID", "Title", "Password", "AccountUser", "URL");
             else
                 _dtPassKeys = _dtAllPassKeysByUserID;
 
@@ -43,10 +43,14 @@ namespace Password_Manager
                 dgvPassKeys.Columns[1].Width = 395;
 
                 dgvPassKeys.Columns[2].HeaderText = "Password";
-                dgvPassKeys.Columns[2].Width = 390;
+                dgvPassKeys.Columns[2].Width = 50;
+                dgvPassKeys.Columns[2].Visible = false;
 
-                dgvPassKeys.Columns[3].HeaderText = "URL";
-                dgvPassKeys.Columns[3].Width = 395;
+                dgvPassKeys.Columns[3].HeaderText = "Account User";
+                dgvPassKeys.Columns[3].Width = 390;
+
+                dgvPassKeys.Columns[4].HeaderText = "URL";
+                dgvPassKeys.Columns[4].Width = 395;
             }
         }
 
@@ -86,7 +90,7 @@ namespace Password_Manager
         private void copyPasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string password = (string)dgvPassKeys.CurrentRow.Cells[2].Value;
-            string decPassword = clsPassKeys.DecryptThePassword(password, clsGlobal.CurrentUser.Password);
+            string decPassword = clsSecurityHelper.Decrypt(password, clsGlobal.CurrentUser.UserName);
 
             clipboardTimer.Stop(); // stop the last operation 
             Clipboard.SetText(decPassword);
@@ -107,6 +111,20 @@ namespace Password_Manager
             clsGlobal.CurrentUser = null;
             _frmLogin.Show();
             this.Close();
+        }
+
+        private void txbSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (txbSearch.Text.Trim() == "" || string.IsNullOrWhiteSpace(txbSearch.Text.Trim()))
+                _dtPassKeys.DefaultView.RowFilter = "";
+            else
+                _dtPassKeys.DefaultView.RowFilter = string.Format("[Title] like '{0}%'", txbSearch.Text.Trim());
+        }
+
+        private void frmMainPage_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            clsGlobal.CurrentUser = null;
+            _frmLogin.Show();
         }
     }
 }

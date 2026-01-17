@@ -116,6 +116,7 @@
             this.txbSearch.Name = "txbSearch";
             this.txbSearch.Size = new System.Drawing.Size(466, 33);
             this.txbSearch.TabIndex = 3;
+            this.txbSearch.TextChanged += new System.EventHandler(this.txbSearch_TextChanged);
             // 
             // dgvPassKeys
             // 
@@ -241,6 +242,7 @@
             this.Name = "frmMainPage";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Main Page";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMainPage_FormClosing);
             this.Load += new System.EventHandler(this.frmMainPage_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
